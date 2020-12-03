@@ -1,0 +1,194 @@
+
+===============
+Unsorted random
+===============
+
+N = 10
+
+                ALGORITHM      COPIES   DESTRUCTS       MOVES    COMPARES   MILLISECS
+           Selection sort          16          16          14          45           0
+           Insertion sort           9           9          17          17           0
+     Shellsort suboptimal          22          22          28          28           0
+        Shellsort optimal          15          15          19          15           0
+     Quicksort suboptimal          19          19          38          21           0
+        Quicksort optimal          32          32          64          49           0
+                Mergesort           0           0          32          23           0
+
+N = 100
+
+                ALGORITHM      COPIES   DESTRUCTS       MOVES    COMPARES   MILLISECS
+           Selection sort         191         191         184       4,950           0
+           Insertion sort          99          99       2,518       2,518           0
+     Shellsort suboptimal         503         503       2,043       2,043           0
+        Shellsort optimal         342         342       1,789         342           0
+     Quicksort suboptimal         394         394         788         748           0
+        Quicksort optimal         518         518       1,036         893           0
+                Mergesort           0           0         639         540           0
+
+N = 1,000
+
+                ALGORITHM      COPIES   DESTRUCTS       MOVES    COMPARES   MILLISECS
+           Selection sort       1,991       1,991       1,984     499,500           2
+           Insertion sort         999         999     251,840     251,840           2
+     Shellsort suboptimal       8,006       8,006     194,205     194,205           2
+        Shellsort optimal       5,457       5,457      72,161       5,457           1
+     Quicksort suboptimal       6,362       6,362      12,724      10,682           0
+        Quicksort optimal       6,175       6,175      12,350      12,571           0
+                Mergesort           0           0       9,701       8,702           1
+
+N = 10,000
+
+                ALGORITHM      COPIES   DESTRUCTS       MOVES    COMPARES   MILLISECS
+           Selection sort      19,993      19,993      19,988  49,995,000         229
+           Insertion sort       9,999       9,999  24,946,342  24,946,342         280
+     Shellsort suboptimal     120,005     120,005   2,593,044   2,593,044          28
+        Shellsort optimal      75,243      75,243   1,918,576      75,243          30
+     Quicksort suboptimal      84,602      84,602     169,204     152,057           3
+        Quicksort optimal      80,181      80,181     160,362     171,405           3
+                Mergesort           0           0     130,434     120,435          15
+
+==============
+Already sorted
+==============
+
+N = 10
+
+                ALGORITHM      COPIES   DESTRUCTS       MOVES    COMPARES   MILLISECS
+           Selection sort           9           9           0          45           0
+           Insertion sort           9           9           0           0           0
+     Shellsort suboptimal          22          22          22          22           0
+        Shellsort optimal          15          15           0          15           0
+     Quicksort suboptimal          10          10          20          45           0
+        Quicksort optimal          27          27          54          49           0
+                Mergesort           0           0          34          25           0
+
+N = 100
+
+                ALGORITHM      COPIES   DESTRUCTS       MOVES    COMPARES   MILLISECS
+           Selection sort          99          99           0       4,950           0
+           Insertion sort          99          99           0           0           0
+     Shellsort suboptimal         503         503         503         503           0
+        Shellsort optimal         342         342           0         342           0
+     Quicksort suboptimal         100         100         200       4,950           0
+        Quicksort optimal         419         419         838         780           0
+                Mergesort           0           0         672         573           0
+
+N = 1,000
+
+                ALGORITHM      COPIES   DESTRUCTS       MOVES    COMPARES   MILLISECS
+           Selection sort         999         999           0     499,500           2
+           Insertion sort         999         999           0           0           0
+     Shellsort suboptimal       8,006       8,006       8,006       8,006           0
+        Shellsort optimal       5,457       5,457           0       5,457           0
+     Quicksort suboptimal       1,000       1,000       2,000     499,500           2
+        Quicksort optimal       5,938       5,938      11,876      10,987           0
+                Mergesort           0           0       9,976       8,977           0
+
+N = 10,000
+
+                ALGORITHM      COPIES   DESTRUCTS       MOVES    COMPARES   MILLISECS
+           Selection sort       9,999       9,999           0  49,995,000         224
+           Insertion sort       9,999       9,999           0           0           0
+     Shellsort suboptimal     120,005     120,005     120,005     120,005           1
+        Shellsort optimal      75,243      75,243           0      75,243           1
+     Quicksort suboptimal      10,000      10,000      20,000  49,995,000         228
+        Quicksort optimal      74,613      74,613     149,226     143,631           2
+                Mergesort           0           0     133,616     123,617          13
+
+==============
+Reverse sorted
+==============
+
+N = 10
+
+                ALGORITHM      COPIES   DESTRUCTS       MOVES    COMPARES   MILLISECS
+           Selection sort          14          14          10          45           0
+           Insertion sort           9           9          45          45           0
+     Shellsort suboptimal          22          22          45          45           0
+        Shellsort optimal          15          15          41          15           0
+     Quicksort suboptimal          35          35          70          45           0
+        Quicksort optimal          37          37          74          59           0
+                Mergesort           0           0          34          25           0
+
+N = 100
+
+                ALGORITHM      COPIES   DESTRUCTS       MOVES    COMPARES   MILLISECS
+           Selection sort         149         149         100       4,950           0
+           Insertion sort          99          99       4,950       4,950           0
+     Shellsort suboptimal         503         503       4,752       4,752           0
+        Shellsort optimal         342         342       3,983         342           0
+     Quicksort suboptimal       2,600       2,600       5,200       4,950           0
+        Quicksort optimal         623         623       1,246       1,205           0
+                Mergesort           0           0         672         573           0
+
+N = 1,000
+
+                ALGORITHM      COPIES   DESTRUCTS       MOVES    COMPARES   MILLISECS
+           Selection sort       1,499       1,499       1,000     499,500           3
+           Insertion sort         999         999     499,500     499,500           5
+     Shellsort suboptimal       8,006       8,006     367,514     367,514           3
+        Shellsort optimal       5,457       5,457     354,513       5,457           5
+     Quicksort suboptimal     251,000     251,000     502,000     499,500           6
+        Quicksort optimal       9,285       9,285      18,570      19,750           0
+                Mergesort           0           0       9,976       8,977           0
+
+N = 10,000
+
+                ALGORITHM      COPIES   DESTRUCTS       MOVES    COMPARES   MILLISECS
+           Selection sort      14,999      14,999      10,000  49,995,000         312
+           Insertion sort       9,999       9,999  49,995,000  49,995,000         555
+     Shellsort suboptimal     120,005     120,005  37,237,238  37,237,238         381
+        Shellsort optimal      75,243      75,243  33,461,969      75,243         494
+     Quicksort suboptimal  25,010,000  25,010,000  50,020,000  49,995,000         682
+        Quicksort optimal     125,660     125,660     251,320     279,567           3
+                Mergesort           0           0     133,616     123,617          13
+
+==========
+All zeroes
+==========
+
+N = 10
+
+                ALGORITHM      COPIES   DESTRUCTS       MOVES    COMPARES   MILLISECS
+           Selection sort           9           9           0          45           0
+           Insertion sort           9           9           0           0           0
+     Shellsort suboptimal          22          22          22          22           0
+        Shellsort optimal          15          15           0          15           0
+     Quicksort suboptimal          10          10          20          45           0
+        Quicksort optimal          20          20          40          75           0
+                Mergesort           0           0          24          15           0
+
+N = 100
+
+                ALGORITHM      COPIES   DESTRUCTS       MOVES    COMPARES   MILLISECS
+           Selection sort          99          99           0       4,950           0
+           Insertion sort          99          99           0           0           0
+     Shellsort suboptimal         503         503         503         503           0
+        Shellsort optimal         342         342           0         342           0
+     Quicksort suboptimal         100         100         200       4,950           0
+        Quicksort optimal         200         200         400       5,250           0
+                Mergesort           0           0         415         316           0
+
+N = 1,000
+
+                ALGORITHM      COPIES   DESTRUCTS       MOVES    COMPARES   MILLISECS
+           Selection sort         999         999           0     499,500           2
+           Insertion sort         999         999           0           0           0
+     Shellsort suboptimal       8,006       8,006       8,006       8,006           0
+        Shellsort optimal       5,457       5,457           0       5,457           0
+     Quicksort suboptimal       1,000       1,000       2,000     499,500           2
+        Quicksort optimal       2,000       2,000       4,000     502,500           2
+                Mergesort           0           0       5,931       4,932           0
+
+N = 10,000
+
+                ALGORITHM      COPIES   DESTRUCTS       MOVES    COMPARES   MILLISECS
+           Selection sort       9,999       9,999           0  49,995,000         219
+           Insertion sort       9,999       9,999           0           0           0
+     Shellsort suboptimal     120,005     120,005     120,005     120,005           1
+        Shellsort optimal      75,243      75,243           0      75,243           1
+     Quicksort suboptimal      10,000      10,000      20,000  49,995,000         202
+        Quicksort optimal      20,000      20,000      40,000  50,025,000         203
+                Mergesort           0           0      74,607      64,608          10
+
+Done! Total 4,228 ms.
