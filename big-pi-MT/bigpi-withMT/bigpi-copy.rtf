@@ -1,0 +1,498 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2513
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fswiss\fcharset0 Helvetica-Bold;}
+{\colortbl;\red255\green255\blue255;\red63\green127\blue95;\red127\green0\blue85;\red42\green0\blue255;
+\red0\green80\blue50;\red100\green40\blue128;}
+{\*\expandedcolortbl;;\csgenericrgb\c24706\c49804\c37255;\csgenericrgb\c49804\c0\c33333;\csgenericrgb\c16471\c0\c100000;
+\csgenericrgb\c0\c31373\c19608;\csgenericrgb\c39216\c15686\c50196;}
+\margl1440\margr1440\vieww22920\viewh13720\viewkind0
+\deftab720
+\pard\pardeftab720\partightenfactor0
+
+\f0\fs24 \cf2 /**\cf0 \
+\cf2  * Assignment 9. Big PI\cf0 \
+\cf2  *\cf0 \
+\cf2  * Compute and print the first thousand decimal digits of \uc0\u960 \cf0 \
+\cf2  * using the \ul Borwein\ulnone  algorithm.\cf0 \
+\cf2  *\cf0 \
+\cf2  * pi.cpp\cf0 \
+\cf2  *\cf0 \
+\cf2  * Created on: \ul Oct\ulnone  26, 2020\cf0 \
+\cf2  * Author: \ul Bharathi\ulnone  \ul Vidhya\ulnone  \ul Chandenasekaran\cf0 \ulnone \
+\cf2  */\cf0 \
+\
+\pard\pardeftab720\partightenfactor0
+
+\f1\b \cf3 #include
+\f0\b0 \cf0  \cf4 <iostream>\cf0 \
+
+\f1\b \cf3 #include
+\f0\b0 \cf0  \cf4 <string.h>\cf0 \
+
+\f1\b \cf3 #include
+\f0\b0 \cf0  \cf4 <fstream>\cf0 \
+
+\f1\b \cf3 #include
+\f0\b0 \cf0  \cf4 <mpir.h>\cf0 \
+
+\f1\b \cf3 #include
+\f0\b0 \cf0  \cf4 <mpirxx.h>\cf0 \
+
+\f1\b \cf3 #include
+\f0\b0 \cf0  \cf4 <chrono>\cf0 \
+
+\f1\b \cf3 #include
+\f0\b0 \cf0  \cf4 <iomanip>\cf0 \
+
+\f1\b \cf3 #include
+\f0\b0 \cf0  \cf4 <stdlib.h>\cf0 \
+
+\f1\b \cf3 #include
+\f0\b0 \cf0  \cf4 <math.h>\cf0 \
+
+\f1\b \cf3 #include
+\f0\b0 \cf0  \cf4 <ctime>\cf0 \
+\
+
+\f1\b \cf3 #include
+\f0\b0 \cf0  \cf4 <mutex>\cf0 \
+
+\f1\b \cf3 #include
+\f0\b0 \cf0  \cf4 <condition_variable>\cf0 \
+
+\f1\b \cf3 #include
+\f0\b0 \cf0  \cf4 <thread>\cf0 \
+\
+
+\f1\b \cf3 using
+\f0\b0 \cf0  
+\f1\b \cf3 namespace
+\f0\b0 \cf0  std;\
+
+\f1\b \cf3 using
+\f0\b0 \cf0  
+\f1\b \cf3 namespace
+\f0\b0 \cf0  std::chrono;\
+\
+\
+
+\f1\b \cf3 const
+\f0\b0 \cf0  
+\f1\b \cf3 int
+\f0\b0 \cf0  MAX_ITERATIONS = 10;				\cf2 //number of iterations for 1 million digits of Pi\cf0 \
+
+\f1\b \cf3 const
+\f0\b0 \cf0  
+\f1\b \cf3 int
+\f0\b0 \cf0  PLACES         = 1000000;        \cf2 // desired decimal places for extra credit\cf0 \
+
+\f1\b \cf3 const
+\f0\b0 \cf0  
+\f1\b \cf3 int
+\f0\b0 \cf0  PRECISION      = PLACES + 1;  \cf2 // +1 for the digit 3 before the decimal\cf0 \
+\
+
+\f1\b \cf3 const
+\f0\b0 \cf0  
+\f1\b \cf3 int
+\f0\b0 \cf0  BASE       = 10;  \cf2 // base 10 numbers\cf0 \
+
+\f1\b \cf3 const
+\f0\b0 \cf0  
+\f1\b \cf3 int
+\f0\b0 \cf0  BIT_COUNT  = 8;   \cf2 // bits per machine word\cf0 \
+\
+
+\f1\b \cf3 const
+\f0\b0 \cf0  
+\f1\b \cf3 int
+\f0\b0 \cf0  BLOCK_SIZE = 10;                \cf2 // print digits in blocks\cf0 \
+
+\f1\b \cf3 const
+\f0\b0 \cf0  
+\f1\b \cf3 int
+\f0\b0 \cf0  LINE_SIZE  = 100;               \cf2 // digits to print per line\cf0 \
+
+\f1\b \cf3 const
+\f0\b0 \cf0  
+\f1\b \cf3 int
+\f0\b0 \cf0  LINE_COUNT = PLACES/LINE_SIZE;  \cf2 // lines to print\cf0 \
+
+\f1\b \cf3 const
+\f0\b0 \cf0  
+\f1\b \cf3 int
+\f0\b0 \cf0  GROUP_SIZE = 5;                 \cf2 // line grouping size\cf0 \
+\
+
+\f1\b \cf3 const
+\f0\b0 \cf0  \cf5 string\cf0  OUTPUT_FILE = \cf4 "c_bigpi_output.txt"\cf0 ;		\cf2 // the output file\cf0 \
+\
+
+\f1\b \cf3 void
+\f0\b0 \cf0  
+\f1\b compute_pi_cpp
+\f0\b0 (\cf5 ofstream\cf0  &out);\
+
+\f1\b \cf3 void
+\f0\b0 \cf0  
+\f1\b print
+\f0\b0 (
+\f1\b \cf3 const
+\f0\b0 \cf0  \cf5 mpf_t\cf0 & pi, \cf5 ofstream\cf0  &out, 
+\f1\b \cf3 double
+\f0\b0 \cf0  sec, 
+\f1\b \cf3 long
+\f0\b0 \cf0  nsec);\
+\pard\pardeftab720\partightenfactor0
+\cf5 string\cf0  
+\f1\b commafy
+\f0\b0 (
+\f1\b \cf3 long
+\f0\b0 \cf0  i);\
+\pard\pardeftab720\partightenfactor0
+
+\f1\b \cf3 void
+\f0\b0 \cf0  
+\f1\b power4
+\f0\b0 (\cf5 mpf_t\cf0 & xxxx, 
+\f1\b \cf3 const
+\f0\b0 \cf0  \cf5 mpf_t\cf0 & x);\
+
+\f1\b \cf3 void
+\f0\b0 \cf0  
+\f1\b y_root4
+\f0\b0 (\cf5 mpf_t\cf0 & y_root4, \cf5 mpf_t\cf0 & x);\
+
+\f1\b \cf3 void
+\f0\b0 \cf0  
+\f1\b sub
+\f0\b0 (\cf5 mpf_t\cf0 & diff, \cf5 mpf_t\cf0 & num1, \cf5 mpf_t\cf0 & num2);\
+
+\f1\b \cf3 void
+\f0\b0 \cf0  
+\f1\b sum
+\f0\b0 (\cf5 mpf_t\cf0 & sum, \cf5 mpf_t\cf0 & num1, \cf5 mpf_t\cf0 & num2);\
+\
+
+\f1\b \cf3 int
+\f0\b0 \cf0  
+\f1\b main
+\f0\b0 ()\
+\{\
+\
+	
+\f1\b \cf3 auto
+\f0\b0 \cf0  timenow =\
+	      chrono::\cf5 system_clock\cf0 ::
+\f1\b \cf6 to_time_t
+\f0\b0 \cf0 (chrono::\cf5 system_clock\cf0 ::
+\f1\b \cf6 now
+\f0\b0 \cf0 ());\
+\
+    \cf2 // Output file\cf0 \
+    \cf5 ofstream\cf0  out;\
+    out.open(OUTPUT_FILE);\
+\
+    out << \cf4 "Updated on "\cf0  << 
+\f1\b \cf6 ctime
+\f0\b0 \cf0 (&timenow) << endl << endl;\
+    \cf2 // Computes the big pi using the mpf_ functions from the C library.\cf0 \
+	out<< \cf4 "C API: pi to 1,000,000 places:"\cf0  << endl;\
+	out << endl;\
+	compute_pi_cpp(out);\
+	cout << \cf4 "Done!"\cf0 ;\
+	
+\f1\b \cf3 return
+\f0\b0 \cf0  0;\
+\}\
+\
+
+\f1\b \cf3 void
+\f0\b0 \cf0  
+\f1\b y_root4
+\f0\b0 (\cf5 mpf_t\cf0 & y_root4, \cf5 mpf_t\cf0 & x)\
+\{\
+    \cf5 mpf_t\cf0  root2;\
+    mpf_init(root2);\
+\
+    mpf_sqrt(root2, x);\
+    mpf_sqrt(y_root4, root2);\
+\}\
+\
+
+\f1\b \cf3 void
+\f0\b0 \cf0  
+\f1\b power4
+\f0\b0 (\cf5 mpf_t\cf0 & xxxx, 
+\f1\b \cf3 const
+\f0\b0 \cf0  \cf5 mpf_t\cf0 & x)\
+\{\
+    \cf5 mpf_t\cf0  xx;\
+    mpf_init(xx);\
+\
+    mpf_mul(xx, x, x);\
+    mpf_mul(xxxx, xx, xx);\
+\}\
+\
+
+\f1\b \cf3 void
+\f0\b0 \cf0  
+\f1\b sum
+\f0\b0 (\cf5 mpf_t\cf0 & sum, \cf5 mpf_t\cf0 & num1, \cf5 mpf_t\cf0 & num2)\
+\{\
+	mpf_add(sum, num1, num2);\
+\}\
+\
+
+\f1\b \cf3 void
+\f0\b0 \cf0  
+\f1\b sub
+\f0\b0 (\cf5 mpf_t\cf0 & diff, \cf5 mpf_t\cf0 & num1, \cf5 mpf_t\cf0 & num2)\
+\{\
+	mpf_sub(diff, num1, num2);\
+\}\
+\
+
+\f1\b \cf3 void
+\f0\b0 \cf0  
+\f1\b mul
+\f0\b0 (\cf5 mpf_t\cf0 & prod, \cf5 mpf_t\cf0 & num1, \cf5 mpf_t\cf0 & num2)\
+\{\
+	mpf_mul(prod, num1, num2);\
+\}\
+\
+
+\f1\b \cf3 void
+\f0\b0 \cf0  
+\f1\b div
+\f0\b0 (\cf5 mpf_t\cf0 & quot, \cf5 mpf_t\cf0 & num1, \cf5 mpf_t\cf0 & num2)\
+\{\
+	mpf_div(quot, num1, num2);\
+\}\
+\
+
+\f1\b \cf3 void
+\f0\b0 \cf0  
+\f1\b compute_pi_cpp
+\f0\b0 (\cf5 ofstream\cf0  &out)\
+\{\
+\
+    mpf_set_default_prec(BIT_COUNT*PRECISION);  \cf2 // precision in bits\cf0 \
+\
+    \cf5 mpf_t\cf0   a_init, y_init, f1,f2, num,  den, yi4, fsqrt, holdYi, oneMinueI, ai, factor1, factor2, yi, sqrt2;\
+    \cf5 mpf_t\cf0  one, six, two, four;\
+    mpf_init(a_init);\
+    mpf_init(sqrt2);\
+    mpf_init(y_init);\
+    mpf_init(yi);\
+	mpf_init(f1);\
+	mpf_init(f2);\
+	mpf_init(num);\
+	mpf_init(den);\
+	mpf_init(yi4);\
+	mpf_init(fsqrt);\
+	mpf_init(holdYi);\
+	mpf_init(oneMinueI);\
+  	mpf_init(ai);\
+  	mpf_init(factor1);\
+  	mpf_init(factor2);\
+\
+    mpf_init(one);  mpf_set_str(one,  \cf4 "1"\cf0 , BASE);\
+    mpf_init(two);  mpf_set_str(two,  \cf4 "2"\cf0 , BASE);\
+    mpf_init(four); mpf_set_str(four, \cf4 "4"\cf0 , BASE);\
+    mpf_init(six);  mpf_set_str(six,  \cf4 "6"\cf0 , BASE);\
+\
+	mpf_sqrt(sqrt2,two);\
+\pard\pardeftab720\partightenfactor0
+\cf2 //	mpf_mul(f1, four, sqrt2);									//\ul mul\cf0 \ulnone \
+	mul(f1, four, sqrt2);\
+\cf2 //	mpf_sub(f1,six,f1);								//sub\cf0 \
+	sub(f1,six,f1);\
+\
+\cf2 //	mpf_sqrt(f2,two);\cf0 \
+\cf2 //	mpf_sub(f2,sqrt2,one);							//sub\cf0 \
+	sub(f2,sqrt2,one);\
+\
+	mpf_set(a_init,f1);\
+	mpf_set(y_init,f2);\
+\
+    \cf5 mpf_t\cf0  pi;\
+    mpf_init(pi);\
+\
+	
+\f1\b \cf3 auto
+\f0\b0 \cf0  start_time = \cf5 steady_clock\cf0 ::
+\f1\b \cf6 now
+\f0\b0 \cf0 ();\
+\
+    
+\f1\b \cf3 for
+\f0\b0 \cf0  (
+\f1\b \cf3 int
+\f0\b0 \cf0  i = 1; i <= MAX_ITERATIONS; i++)\
+    \{\
+	    	power4(yi4, y_init);														\cf2 //power4\cf0 \
+\cf2 //	    	mpf_sub(oneMinueI,one,yi4);				//sub\cf0 \
+	    	sub(oneMinueI,one,yi4);\
+		    y_root4(fsqrt, oneMinueI);\
+\
+\
+		    \cf2 //y_i\cf0 \
+\cf2 //		    mpf_sub(\ul num\ulnone ,one,\ul fsqrt\ulnone );					//sub\cf0 \
+	    	sub(num,one,fsqrt);\
+\cf2 //		    mpf_add(den,\ul fsqrt\ulnone ,one);										//add\cf0 \
+		    sum(den,fsqrt,one);\
+\
+\cf2 //		    mpf_div(y_init,\ul num\ulnone ,den); 											//\ul div\cf0 \ulnone \
+		    div(y_init,num,den);\
+\
+\
+		    \cf2 //a_i part2\cf0 \
+		    mpf_set(holdYi,y_init);\
+		    mpf_pow_ui(factor2,y_init,2u);\
+\cf2 //		    mpf_add(factor2,y_init,factor2);							//add\cf0 \
+		    sum(factor2,y_init,factor2);\
+\cf2 //		    mpf_add(factor2,factor2,one);								//add\cf0 \
+		    sum(factor2,factor2,one);\
+\cf2 //		    mpf_mul(factor2,factor2,y_init);				//\ul mul\cf0 \ulnone \
+		    mul(factor2,factor2,y_init);\
+\
+		    
+\f1\b \cf3 double
+\f0\b0 \cf0  two = (2*i)+1;\
+		    
+\f1\b \cf3 double
+\f0\b0 \cf0  twoP=pow(2,two);\
+\
+		    mpf_mul_ui(factor2,factor2,twoP);\
+\
+\
+		    \cf2 //a_i part1\cf0 \
+\cf2 //		    mpf_add(factor1,y_init,one);								//add\cf0 \
+		    sum(factor1,y_init,one);\
+		    power4(factor1, factor1);													\cf2 //power4\cf0 \
+\cf2 //		    mpf_pow_ui(factor1,factor1,4u);\cf0 \
+\cf2 //		    mpf_mul(factor1,factor1,a_init);				//\ul mul\cf0 \ulnone \
+		    mul(factor1,factor1,a_init);\
+\
+\cf2 //		    mpf_sub(a_init,factor1,factor2);		//sub\cf0 \
+		    sub(a_init,factor1,factor2);\
+    \}\
+\
+    
+\f1\b \cf3 decltype
+\f0\b0 \cf0 (start_time) end_time = \cf5 steady_clock\cf0 ::
+\f1\b \cf6 now
+\f0\b0 \cf0 ();\
+\
+	\cf2 // Time in \ul nanosectonds\ulnone  and seconds.\cf0 \
+    
+\f1\b \cf3 long
+\f0\b0 \cf0  nsec = duration_cast<\cf5 nanoseconds\cf0 >(end_time-start_time).count();\
+    
+\f1\b \cf3 double
+\f0\b0 \cf0  sec = \ul std::chrono::\cf5 \ulc5 duration\cf0 \ulc0 <
+\f1\b \cf3 \ulc3 double
+\f0\b0 \cf0 \ulc0 >\ulnone (end_time-start_time).count();\
+\
+\cf2 //	mpf_div(pi,one,a_init);														//\ul div\cf0 \ulnone \
+	div(pi,one,a_init);\
+    print(pi, out, sec, nsec);\
+\}\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f1\b \cf3 void
+\f0\b0 \cf0  
+\f1\b print
+\f0\b0 (
+\f1\b \cf3 const
+\f0\b0 \cf0  \cf5 mpf_t\cf0 & pi, \cf5 ofstream\cf0  &out, 
+\f1\b \cf3 double
+\f0\b0 \cf0  sec, 
+\f1\b \cf3 long
+\f0\b0 \cf0  nsec)\
+\{\
+\
+\
+	
+\f1\b \cf3 int
+\f0\b0 \cf0  group_count=0;\
+	
+\f1\b \cf3 char
+\f0\b0 \cf0  *ptr=NULL;\
+	
+\f1\b \cf3 char
+\f0\b0 \cf0  *newPtr;\
+	\cf5 mp_exp_t\cf0  exp;\
+	newPtr = mpf_get_str(ptr,&exp,BASE,PLACES+1,pi);\
+	out<<newPtr[0]<<\cf4 "."\cf0 <<setw(1);\
+\
+	
+\f1\b \cf3 for
+\f0\b0 \cf0 (
+\f1\b \cf3 int
+\f0\b0 \cf0  i =1;i<PLACES+1;i++)\
+	\{\
+		out<<newPtr[i];\
+		
+\f1\b \cf3 if
+\f0\b0 \cf0 (i%BLOCK_SIZE==0)\
+		\{\
+			out<<setw(2)<<\cf4 " "\cf0 ;\
+			
+\f1\b \cf3 if
+\f0\b0 \cf0 (i%LINE_SIZE==0)\
+			\{\
+				out<<endl;\
+				out<<\cf4 " "\cf0 <<setw(2);\
+				group_count++;\
+				
+\f1\b \cf3 if
+\f0\b0 \cf0 (group_count%GROUP_SIZE==0)\
+				\{\
+					out<<endl;\
+					out<<\cf4 " "\cf0 <<setw(1);\
+				\}\
+			\}\
+		\}\
+\
+	\}\
+\
+    out << endl;\
+\
+    \cf2 // Print the elapsed time\cf0 \
+	out << \cf4 "  Elapsed time : "\cf0  << commafy(nsec) << \cf4 " \ul nsecs\ulnone  = "\cf0  << setprecision(9) << fixed << sec << \cf4 " seconds"\cf0  << endl;\
+\
+\
+	out.close();\
+\}\
+\
+\pard\pardeftab720\partightenfactor0
+\cf5 string\cf0  
+\f1\b commafy
+\f0\b0 (
+\f1\b \cf3 long
+\f0\b0 \cf0  i)\
+\{\
+    \cf5 string\cf0  str = 
+\f1\b \cf6 to_string
+\f0\b0 \cf0 (i);\
+    
+\f1\b \cf3 int
+\f0\b0 \cf0  pos = str.length() - 3;\
+\
+    
+\f1\b \cf3 while
+\f0\b0 \cf0  (pos > 0)\
+    \{\
+        str.insert(pos, \cf4 ","\cf0 );\
+        pos -= 3;\
+    \}\
+\
+    
+\f1\b \cf3 return
+\f0\b0 \cf0  str;\
+\}\
+\
+\
+}
